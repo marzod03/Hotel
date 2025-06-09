@@ -7,28 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Administrador {
-  id       Int    @id @default(autoincrement())
-  nombre   String
-  correo   String @unique
-  password String
-}
-
-model Habitacion {
-  id          Int       @id @default(autoincrement())
-  nombre      String
-  precio      Float
-  descripcion String
-  imagenUrl   String
-  Reserva     Reserva[]
-}
-
-model ImagenHotel {
-  id  Int    @id @default(autoincrement())
-  url String
-}
-
-
 model administrador {
   id       Int    @id @default(autoincrement())
   nombre   String
