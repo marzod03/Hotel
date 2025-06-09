@@ -40,3 +40,73 @@ model Reserva {
 
   @@index([habitacionId], map: "Reserva_habitacionId_fkey")
 }
+
+model administrador {
+  id       Int    @id @default(autoincrement())
+  nombre   String
+  correo   String @unique(map: "Administrador_correo_key")
+  password String
+}
+
+model cliente {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  apellido String
+  telefono String?   @db.VarChar(20)
+  email    String    @unique
+  reserva  reserva[]
+}
+
+model habitacion {
+  id                Int                 @id @default(autoincrement())
+  nombre            String
+  precio            Float
+  descripcion       String?             @db.Text
+  imagenUrl         String
+  tipoHabitacion    String?
+  promocion         promocion[]
+  reservahabitacion reservahabitacion[]
+}
+
+model imagenhotel {
+  id  Int    @id @default(autoincrement())
+  url String
+}
+
+model promocion {
+  id           Int        @id @default(autoincrement())
+  precioPromo  Float      @db.Float
+  inicio       DateTime   @db.DateTime(0)
+  fin          DateTime   @db.DateTime(0)
+  habitacionId Int
+  habitacion   habitacion @relation(fields: [habitacionId], references: [id])
+
+  @@index([habitacionId])
+}
+
+model reserva {
+  id                Int                 @id @default(autoincrement())
+  nombreCliente     String?
+  fechaEntrada      DateTime
+  fechaSalida       DateTime
+  status            String              @default("pendiente")
+  telefono          String?             @db.VarChar(20)
+  email             String?             @db.VarChar(255)
+  clienteId         Int?
+  tipoHabitacion    String?
+  cliente           cliente?            @relation(fields: [clienteId], references: [id])
+  reservahabitacion reservahabitacion[]
+
+  @@index([clienteId], map: "reserva_clienteId_fkey")
+}
+
+model reservahabitacion {
+  id           Int        @id @default(autoincrement())
+  reservaId    Int
+  habitacionId Int
+  habitacion   habitacion @relation(fields: [habitacionId], references: [id], map: "ReservaHabitacion_habitacionId_fkey")
+  reserva      reserva    @relation(fields: [reservaId], references: [id], map: "ReservaHabitacion_reservaId_fkey")
+
+  @@index([habitacionId], map: "ReservaHabitacion_habitacionId_idx")
+  @@index([reservaId], map: "ReservaHabitacion_reservaId_idx")
+}
