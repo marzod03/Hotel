@@ -28,18 +28,6 @@ model ImagenHotel {
   url String
 }
 
-model Reserva {
-  id             Int        @id @default(autoincrement())
-  nombreCliente  String
-  fechaEntrada   DateTime
-  fechaSalida    DateTime
-  tipoHabitacion String
-  status         String     @default("pendiente")
-  habitacionId   Int
-  Habitacion     Habitacion @relation(fields: [habitacionId], references: [id])
-
-  @@index([habitacionId], map: "Reserva_habitacionId_fkey")
-}
 
 model administrador {
   id       Int    @id @default(autoincrement())
