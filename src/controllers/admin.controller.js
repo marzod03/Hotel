@@ -15,14 +15,14 @@ exports.registrarAdmin = async (req, res) => {
       return res.status(400).json({ message: "Todos los campos son obligatorios." });
     }
 
-    const existe = await prisma.administrador.findUnique({ where: { correo } });
+    const existe = await prisma.Administrador.findUnique({ where: { correo } });
     if (existe) {
       return res.status(400).json({ message: "El correo ya está registrado." });
     }
 
     const hash = await bcrypt.hash(password, 10);
 
-    await prisma.administrador.create({
+    await prisma.Administrador.create({
       data: { nombre, correo, password: hash },
     });
 
@@ -41,7 +41,7 @@ exports.loginAdmin = async (req, res) => {
       return res.status(400).json({ message: "Correo y contraseña son obligatorios." });
     }
 
-    const admin = await prisma.administrador.findUnique({ where: { correo } });
+    const admin = await prisma.Administrador.findUnique({ where: { correo } });
     if (!admin) {
       return res.status(401).json({ message: "Credenciales incorrectas." });
     }
