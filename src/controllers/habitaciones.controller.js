@@ -4,9 +4,10 @@ const prisma = new PrismaClient();
 exports.obtenerHabitaciones = async (req, res) => {
   try {
     const habitaciones = await prisma.habitacion.findMany({
-      include: {
-        promociones: true,
-      },
+      //include: {
+        //Habitacion: true,
+        //Reserva: true
+      //},
     });
 
     const hoy = new Date();
