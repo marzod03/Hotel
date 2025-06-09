@@ -5,7 +5,8 @@ exports.obtenerHabitaciones = async (req, res) => {
   try {
     const habitaciones = await prisma.habitacion.findMany({
       include: {
-        Habitacion: true
+        Habitacion: true,
+        Reserva: true
       },
     });
 
