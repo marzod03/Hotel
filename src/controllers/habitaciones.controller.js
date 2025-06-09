@@ -5,14 +5,15 @@ exports.obtenerHabitaciones = async (req, res) => {
   try {
     const habitaciones = await prisma.habitacion.findMany({
       include: {
-        promociones: true,
+        promocion: true,
+        reservahabitacion: true
       },
     });
 
     const hoy = new Date();
 
     const habitacionesConPromocion = habitaciones.map((habitacion) => {
-      const promocionesActivas = habitacion.promociones.filter((promo) => {
+      const promocionesActivas = habitacion.promocion.filter((promo) => {
         const inicio = new Date(promo.inicio);
         const fin = new Date(promo.fin);
         return inicio <= hoy && hoy <= fin;
@@ -27,7 +28,7 @@ exports.obtenerHabitaciones = async (req, res) => {
         tipoHabitacion: habitacion.tipoHabitacion,
         precio: habitacion.precio,
         imagenUrl: habitacion.imagenUrl,
-        promociones: habitacion.promociones,
+        promociones: habitacion.promocion,
         promocionActiva: !!promocionActiva,
         precioDescuento: promocionActiva?.precioPromo || null,
         promocionFin: promocionActiva?.fin || null,
@@ -40,6 +41,7 @@ exports.obtenerHabitaciones = async (req, res) => {
     res.status(500).json({ message: "Error al obtener habitaciones", error });
   }
 };
+
 
 
 
