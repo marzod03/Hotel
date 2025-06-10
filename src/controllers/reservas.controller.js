@@ -187,16 +187,18 @@ exports.actualizarEstadoReserva = async (req, res) => {
   } = req.body;
 
   try {
+    // Construir el objeto de update de manera segura:
+    const dataToUpdate = { status };
+
+    if (fechaEntrada) dataToUpdate.fechaEntrada = new Date(fechaEntrada);
+    if (fechaSalida) dataToUpdate.fechaSalida = new Date(fechaSalida);
+    if (nombre && apellido) dataToUpdate.nombreCliente = `${nombre} ${apellido}`;
+    if (telefono) dataToUpdate.telefono = telefono;
+    if (email) dataToUpdate.email = email;
+
     const reservaActualizada = await prisma.reserva.update({
       where: { id: parseInt(id) },
-      data: {
-        status,
-        fechaEntrada: new Date(fechaEntrada),
-        fechaSalida: new Date(fechaSalida),
-        nombreCliente: `${nombre} ${apellido}`,
-        telefono,
-        email
-      },
+      data: dataToUpdate,
       include: {
         cliente: true,
         reservahabitacion: { include: { habitacion: true } }
@@ -204,17 +206,34 @@ exports.actualizarEstadoReserva = async (req, res) => {
     });
 
     // Si la reserva tiene un cliente relacionado, actualizar el cliente
-    if (reservaActualizada.clienteId) {
+    if (reservaActualizada.clienteId && (nombre || apellido || telefono || email)) {
       await prisma.cliente.update({
         where: { id: reservaActualizada.clienteId },
         data: {
-          nombre,
-          apellido,
-          telefono,
-          email
+          ...(nombre && { nombre }),
+          ...(apellido && { apellido }),
+          ...(telefono && { telefono }),
+          ...(email && { email })
         }
       });
     }
+
+    // Volver a obtener la reserva completa actualizada
+    const reservaCompleta = await prisma.reserva.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        cliente: true,
+        reservahabitacion: { include: { habitacion: true } }
+      }
+    });
+
+    res.json(reservaCompleta);
+  } catch (error) {
+    console.error("❌ Error al actualizar reserva:", error);
+    res.status(500).json({ message: "Error al actualizar reserva", error });
+  }
+};
+
 
     // Volver a obtener la reserva completa actualizada
     const reservaCompleta = await prisma.reserva.findUnique({
