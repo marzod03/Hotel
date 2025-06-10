@@ -160,7 +160,7 @@ exports.obtenerReservas = async (req, res) => {
     const reservas = await prisma.reserva.findMany({
       include: {
         cliente: true,
-        habitaciones: {
+        reservahabitacion: {
           include: {
             habitacion: true
           }
@@ -173,7 +173,6 @@ exports.obtenerReservas = async (req, res) => {
     res.status(500).json({ message: "Error al obtener reservas", error });
   }
 };
-
 
 exports.actualizarEstadoReserva = async (req, res) => {
   const { id } = req.params;
@@ -200,7 +199,7 @@ exports.actualizarEstadoReserva = async (req, res) => {
       },
       include: {
         cliente: true,
-        habitaciones: { include: { habitacion: true } }
+        reservahabitacion: { include: { habitacion: true } }
       }
     });
 
@@ -222,7 +221,7 @@ exports.actualizarEstadoReserva = async (req, res) => {
       where: { id: parseInt(id) },
       include: {
         cliente: true,
-        habitaciones: { include: { habitacion: true } }
+        reservahabitacion: { include: { habitacion: true } }
       }
     });
 
