@@ -35,7 +35,7 @@ router.get("/fechas-ocupadas", async (req, res) => {
   }
 
   try {
-    const reservas = await prisma.ReservaHabitacion.findMany({
+    const reservas = await prisma.reservahabitacion.findMany({
       where: {
         reserva: {
           fechaEntrada: { lt: new Date(fechaSalida) },
