@@ -187,7 +187,6 @@ exports.actualizarEstadoReserva = async (req, res) => {
   } = req.body;
 
   try {
-    // Construir el objeto de update de manera segura:
     const dataToUpdate = { status };
 
     if (fechaEntrada) dataToUpdate.fechaEntrada = new Date(fechaEntrada);
@@ -217,8 +216,6 @@ exports.actualizarEstadoReserva = async (req, res) => {
         }
       });
     }
-
-    // Volver a obtener la reserva completa actualizada
     const reservaCompleta = await prisma.reserva.findUnique({
       where: { id: parseInt(id) },
       include: {
@@ -228,11 +225,13 @@ exports.actualizarEstadoReserva = async (req, res) => {
     });
 
     res.json(reservaCompleta);
+
   } catch (error) {
     console.error("❌ Error al actualizar reserva:", error);
     res.status(500).json({ message: "Error al actualizar reserva", error });
   }
 };
+
 
 
     // Volver a obtener la reserva completa actualizada
