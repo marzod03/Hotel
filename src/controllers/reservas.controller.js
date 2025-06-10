@@ -57,19 +57,18 @@ exports.crearReserva = async (req, res) => {
         return res.status(404).json({ message: `Habitación con ID ${h.id} no encontrada.` });
       }
 
-      const reservasExistentes = await prisma.ReservaHabitacion.findMany({
-      where: {
-        habitacionId: habitacion.id,
-        reserva: {
-          is: {
-            fechaEntrada: { lt: new Date(fechaSalida) },
-            fechaSalida: { gt: new Date(fechaEntrada) },
+      const reservasExistentes = await prisma.reservahabitacion.findMany({
+        where: {
+          habitacionId: habitacion.id,
+          reserva: {
+            is: {
+              fechaEntrada: { lt: new Date(fechaSalida) },
+              fechaSalida: { gt: new Date(fechaEntrada) },
+            },
           },
         },
-      },
-      include: { reserva: true },
-    });
-
+        include: { reserva: true },
+      });
 
       if (reservasExistentes.length > 0) {
         return res.status(400).json({
@@ -93,7 +92,7 @@ exports.crearReserva = async (req, res) => {
 
     // Asociar habitaciones a la reserva
     for (const habitacion of habitacionesDisponibles) {
-      await prisma.ReservaHabitacion.create({
+      await prisma.reservahabitacion.create({
         data: {
           reservaId: nuevaReserva.id,
           habitacionId: habitacion.id,
@@ -153,7 +152,6 @@ exports.crearReserva = async (req, res) => {
     return res.status(500).json({ message: "Error al crear reserva", error });
   }
 };
-
 
 exports.obtenerReservas = async (req, res) => {
   try {
@@ -216,23 +214,6 @@ exports.actualizarEstadoReserva = async (req, res) => {
         }
       });
     }
-    const reservaCompleta = await prisma.reserva.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        cliente: true,
-        reservahabitacion: { include: { habitacion: true } }
-      }
-    });
-
-    res.json(reservaCompleta);
-
-  } catch (error) {
-    console.error("❌ Error al actualizar reserva:", error);
-    res.status(500).json({ message: "Error al actualizar reserva", error });
-  }
-};
-
-
 
     // Volver a obtener la reserva completa actualizada
     const reservaCompleta = await prisma.reserva.findUnique({
@@ -244,19 +225,18 @@ exports.actualizarEstadoReserva = async (req, res) => {
     });
 
     res.json(reservaCompleta);
+
   } catch (error) {
     console.error("❌ Error al actualizar reserva:", error);
     res.status(500).json({ message: "Error al actualizar reserva", error });
   }
 };
 
-
-
 exports.eliminarReserva = async (req, res) => {
   const { id } = req.params;
   try {
     // Primero eliminamos relaciones en la tabla intermedia
-    await prisma.ReservaHabitacion.deleteMany({
+    await prisma.reservahabitacion.deleteMany({
       where: { reservaId: parseInt(id) },
     });
 
