@@ -250,3 +250,32 @@ exports.eliminarReserva = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar reserva", error });
   }
 };
+
+exports.obtenerReservaPorId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const reserva = await prisma.reserva.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        cliente: true,
+        reservahabitacion: {
+          include: {
+            habitacion: true
+          }
+        }
+      }
+    });
+
+    if (!reserva) {
+      return res.status(404).json({ message: "Reserva no encontrada." });
+    }
+
+    res.json(reserva);
+
+  } catch (error) {
+    console.error("❌ Error al obtener reserva:", error);
+    res.status(500).json({ message: "Error al obtener reserva", error });
+  }
+};
+
